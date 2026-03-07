@@ -22,8 +22,8 @@ int main() {
     while (ind < 21) {
         //"An idiot admires complexity, a genius admires simplicity"
         //-Terry Davis
-        for (int KeyCode = 0; KeyCode < 1000; KeyCode++) {
-            if (GetAsyncKeyState(KeyCode++) & IsPressed) {
+        for (int KeyCode = 0; KeyCode < 255; KeyCode++) {
+            if (GetAsyncKeyState(KeyCode) & IsPressed) {
 
             }
         }
