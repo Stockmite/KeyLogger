@@ -8,19 +8,22 @@
 
 using namespace std;
 
+bool DoesKeyCodeGiveChar(int KeyCode) {
+    return false;
+}
+
 int main() {
 
     char Word[21];
     int ind = 0;
 
-    unsigned char PressedKeys;
+    unsigned char PressedKeys = 0x0;
 
     while (ind < 21) {
         //"An idiot admires complexity, a genius admires simplicity"
         //-Terry Davis
-        for (int keyCode = 0; keyCode < 256; ++keyCode) {
-            if (GetAsyncKeyState(keyCode) & IsPressed) {
-
+        for (int KeyCode = 0; KeyCode < 1000; KeyCode++) {
+            if (GetAsyncKeyState(KeyCode++) & IsPressed) {
 
             }
         }
