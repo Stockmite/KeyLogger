@@ -8,8 +8,8 @@
 
 using namespace std;
 
-bool DoesKeyCodeGiveChar(int KeyCode) {
-    return false;
+bool DoesValGiveChar(int KeyCode) {
+    return 48 <= KeyCode && KeyCode <= 90;
 }
 
 int main() {
@@ -17,14 +17,35 @@ int main() {
     char Word[21];
     int ind = 0;
 
-    unsigned char PressedKeys = 0x0;
+    bool PressedKeys[52] = {false};
 
-    while (ind < 21) {
+    while (ind < 100) {
         //"An idiot admires complexity, a genius admires simplicity"
         //-Terry Davis
         for (int KeyCode = 0; KeyCode < 255; KeyCode++) {
-            if (GetAsyncKeyState(KeyCode) & IsPressed) {
+            if ((GetAsyncKeyState(KeyCode) & IsPressed)) {
+                if (DoesValGiveChar(KeyCode)) {
+                    int charIndex = KeyCode - 48;
 
+                    if (!PressedKeys[charIndex]) {
+                        char PressedKey = static_cast<char>(KeyCode);
+
+                        PressedKeys[charIndex] = true;
+                        printf("%c", PressedKey);
+                        ind++;
+                    }
+                }
+
+                
+            } else {
+                if (DoesValGiveChar(KeyCode)) {
+                    int charIndex = KeyCode - 48;
+
+                    if (PressedKeys[charIndex]) {
+
+                        PressedKeys[charIndex] = false;
+                    }
+                }
             }
         }
 
