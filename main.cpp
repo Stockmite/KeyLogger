@@ -5,6 +5,8 @@
 #include <windef.h>
 
 #define IsPressed 0x8000
+#define shiftcode1 16
+#define shiftcode2 160
 
 using namespace std;
 
@@ -20,6 +22,8 @@ int main() {
     bool PressedKeys[52] = {false};
 
     while (ind < 100) {
+        bool MakeUppercase = GetAsyncKeyState(shiftcode1) & GetAsyncKeyState(shiftcode2) & IsPressed;
+
         //"An idiot admires complexity, a genius admires simplicity"
         //-Terry Davis
         for (int KeyCode = 0; KeyCode < 255; KeyCode++) {
@@ -28,7 +32,8 @@ int main() {
                     int charIndex = KeyCode - 48;
 
                     if (!PressedKeys[charIndex]) {
-                        char PressedKey = static_cast<char>(KeyCode);
+                        char SelectedChar = static_cast<char>(KeyCode);
+                        char PressedKey = (MakeUppercase) ? SelectedChar : tolower(SelectedChar);
 
                         PressedKeys[charIndex] = true;
                         printf("%c", PressedKey);
