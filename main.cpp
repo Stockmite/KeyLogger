@@ -11,7 +11,7 @@
 using namespace std;
 
 bool DoesValGiveChar(int KeyCode) {
-    return 48 <= KeyCode && KeyCode <= 90;
+    return 48 <= KeyCode && KeyCode <= 93;
 }
 
 int main() {
@@ -19,7 +19,7 @@ int main() {
     char Word[21];
     int ind = 0;
 
-    bool PressedKeys[52] = {false};
+    bool PressedKeys[128] = {false};
 
     while (ind < 100) {
         bool MakeUppercase = GetAsyncKeyState(shiftcode1) & GetAsyncKeyState(shiftcode2) & IsPressed;
@@ -27,12 +27,14 @@ int main() {
         //"An idiot admires complexity, a genius admires simplicity"
         //-Terry Davis
         for (int KeyCode = 0; KeyCode < 255; KeyCode++) {
+            if (KeyCode==shiftcode1 || KeyCode==shiftcode2) {continue;}
             if ((GetAsyncKeyState(KeyCode) & IsPressed)) {
+                printf("%d is the keycode\n", KeyCode);
                 if (DoesValGiveChar(KeyCode)) {
                     int charIndex = KeyCode - 48;
 
                     if (!PressedKeys[charIndex]) {
-                        char SelectedChar = static_cast<char>(KeyCode);
+                        char SelectedChar = (char)(KeyCode);
                         char PressedKey = (MakeUppercase) ? SelectedChar : tolower(SelectedChar);
 
                         PressedKeys[charIndex] = true;
