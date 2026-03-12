@@ -21,24 +21,27 @@ int main() {
 
     bool PressedKeys[255] = {false};
 
-    while (ind < 100) {
+    printf("%d\n",ind);
+
+    while (ind < 20) {
         bool MakeUppercase = GetAsyncKeyState(shiftcode1) & GetAsyncKeyState(shiftcode2) & IsPressed;
 
         //"An idiot admires complexity, a genius admires simplicity"
         //-Terry Davis
         for (int KeyCode = 0; KeyCode < 255; KeyCode++) {
             if (KeyCode==shiftcode1 || KeyCode==shiftcode2) {continue;}
-            if ((GetKeyState(KeyCode))) {
+            if ((GetAsyncKeyState(KeyCode) & IsPressed)) {
                 if (DoesValGiveChar(KeyCode)) {
                     int charIndex = KeyCode - 48;
 
                     if (!PressedKeys[charIndex]) {
                         char SelectedChar = MapVirtualKey(KeyCode, MAPVK_VK_TO_CHAR);
                         char PressedKey = (MakeUppercase) ? SelectedChar : tolower(SelectedChar);
-                        SelectedChar &= IsPressed;
 
                         PressedKeys[charIndex] = true;
-                        printf("%c", SelectedChar);
+                        if ((bool)SelectedChar) {
+                            printf("%c", PressedKey);
+                        }
                         ind++;
                     }
                 }
@@ -57,6 +60,12 @@ int main() {
         }
 
     }
+
+    fflush(stdin);
+
+    Word[20] = '\0';
+
+    printf("%s\n", Word);
 
     return 0;
 }
