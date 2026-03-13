@@ -11,39 +11,51 @@
 using namespace std;
 
 bool DoesValGiveChar(int KeyCode) {
-    return 0 <= KeyCode && KeyCode <= 255;
+    return 16 <= KeyCode && KeyCode <= 127;
 }
 
 int main() {
 
-    char Word[21];
+    const int max_len = 21;
+    char Word[max_len];
     int ind = 0;
 
-    bool PressedKeys[255] = {false};
-
-    printf("%d\n",ind);
+    bool PressedKeys[128] = {false};
 
     while (ind < 20) {
         bool MakeUppercase = GetAsyncKeyState(shiftcode1) & GetAsyncKeyState(shiftcode2) & IsPressed;
 
         //"An idiot admires complexity, a genius admires simplicity"
         //-Terry Davis
-        for (int KeyCode = 0; KeyCode < 255; KeyCode++) {
+        for (int KeyCode = 0; KeyCode < 128; KeyCode++) {
+
             if (KeyCode==shiftcode1 || KeyCode==shiftcode2) {continue;}
             if ((GetAsyncKeyState(KeyCode) & IsPressed)) {
-                if (DoesValGiveChar(KeyCode)) {
-                    int charIndex = KeyCode - 48;
-
-                    if (!PressedKeys[charIndex]) {
-                        char SelectedChar = MapVirtualKey(KeyCode, MAPVK_VK_TO_CHAR);
-                        char PressedKey = (MakeUppercase) ? SelectedChar : tolower(SelectedChar);
-
-                        PressedKeys[charIndex] = true;
-                        if ((bool)SelectedChar) {
-                            printf("%c", PressedKey);
+                switch (KeyCode) {
+                    case shiftcode1:
+                        if (ind > 0) {
+                            Word[ind] = '\0';
+                            ind = max_len;
+                            KeyCode = 128;
+                            break;
                         }
-                        ind++;
-                    }
+
+                    default:
+                        if (DoesValGiveChar(KeyCode)) {
+                            int charIndex = KeyCode - 48;
+
+                            if (!PressedKeys[charIndex]) {
+                                char SelectedChar = MapVirtualKey(KeyCode, MAPVK_VK_TO_CHAR);
+                                char PressedKey = (MakeUppercase) ? SelectedChar : tolower(SelectedChar);
+
+                                PressedKeys[charIndex] = true;
+                                if ((bool)SelectedChar) {
+                                    Word[ind] = PressedKey;
+                                }
+                                ind++;
+                            }
+                        }
+                        break;
                 }
 
                 
@@ -51,19 +63,16 @@ int main() {
                 if (DoesValGiveChar(KeyCode)) {
                     int charIndex = KeyCode - 48;
 
-                    if (PressedKeys[charIndex]) {
-
-                        PressedKeys[charIndex] = false;
-                    }
+                    PressedKeys[charIndex] = false;
                 }
             }
         }
 
     }
 
-    fflush(stdin);
+    Sleep(100);
 
-    Word[20] = '\0';
+    Word[max_len - 1] = '\0';
 
     printf("%s\n", Word);
 
