@@ -7,6 +7,8 @@
 #define shiftcode1 0x10
 #define shiftcode2 0xA0
 #define IsPressed 0x8000
+#define entercode 0x0D
+#define backspace 0x08
 
 using namespace std;
 
@@ -32,13 +34,22 @@ int main() {
             if (KeyCode==shiftcode1 || KeyCode==shiftcode2) {continue;}
             if ((GetAsyncKeyState(KeyCode) & IsPressed)) {
                 switch (KeyCode) {
-                    case shiftcode1:
+                    case entercode:
                         if (ind > 0) {
                             Word[ind] = '\0';
                             ind = max_len;
                             KeyCode = 128;
                             break;
                         }
+                        break;
+                    case backspace:
+                        if (ind > 0) {
+                            Word[ind] = '\0';
+                            ind--;
+                            Word[ind] = '\0';
+                            break;
+                        }
+                        break;
 
                     default:
                         if (DoesValGiveChar(KeyCode)) {
