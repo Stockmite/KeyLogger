@@ -1,6 +1,6 @@
 #include <iostream>
 #include <windows.h>
-#include <wchar.h>
+#include <string.h>
 #include <winuser.h>
 #include <windef.h>
 
@@ -13,16 +13,16 @@
 using namespace std;
 
 bool DoesValGiveChar(int KeyCode) {
-    return 16 <= KeyCode && KeyCode <= 127;
+    return 16 <= KeyCode && KeyCode <= 255;
 }
 
 int main() {
 
     const int min_len = 21;
-    char*  Word = (char*)malloc(min_len);
+    string Word = "";
     int ind = 0;
 
-    bool PressedKeys[128] = {false};
+    bool PressedKeys[256] = {false};
     bool EnterPressed = false;
 
     while (!EnterPressed) {
@@ -31,43 +31,39 @@ int main() {
 
         //"An idiot admires complexity, a genius admires simplicity"
         //-Terry Davis
-        for (int KeyCode = 0; KeyCode < 128; KeyCode++) {
+        for (int KeyCode = 0; KeyCode < 256; KeyCode++) {
 
             if (KeyCode==shiftcode1 || KeyCode==shiftcode2) {continue;}
             if ((GetAsyncKeyState(KeyCode) & IsPressed)) {
                 switch (KeyCode) {
                     case entercode:
                         if (ind > 0) {
-                            Word[ind] = '\0';
                             EnterPressed = true;
-                            KeyCode = 128;
+                            KeyCode = 255;
                             break;
                         }
                         break;
                     case backspace:
-                        if (ind > 0) {
-                            free(Word+ind);
+                        if (ind > 0 & !PressedKeys[KeyCode]) {
+                            PressedKeys[KeyCode] = true;
                             ind--;
-                            Word[ind] = '\0';
-                            Word = (char*)realloc(Word, ind);
+                            Word.pop_back();
                             break;
                         }
                         break;
 
                     default:
                         if (DoesValGiveChar(KeyCode)) {
-                            int charIndex = KeyCode - 48;
 
-                            if (!PressedKeys[charIndex]) {
+                            if (!PressedKeys[KeyCode]) {
                                 char SelectedChar = MapVirtualKey(KeyCode, MAPVK_VK_TO_CHAR);
                                 char PressedKey = (MakeUppercase) ? SelectedChar : tolower(SelectedChar);
 
-                                PressedKeys[charIndex] = true;
+                                PressedKeys[KeyCode] = true;
                                 if ((bool)SelectedChar) {
-                                    Word[ind] = PressedKey;
+                                    Word.push_back(PressedKey);
                                 }
                                 ind++;
-                                Word = (char*)realloc(Word, ind);
                             }
                         }
                         break;
@@ -75,11 +71,7 @@ int main() {
 
                 
             } else {
-                if (DoesValGiveChar(KeyCode)) {
-                    int charIndex = KeyCode - 48;
-
-                    PressedKeys[charIndex] = false;
-                }
+                PressedKeys[KeyCode] = false;
             }
         }
 
@@ -87,10 +79,7 @@ int main() {
 
     Sleep(100);
 
-    Word[ind - 1] = '\0';
-
-    free(Word);
-    Word = NULL;
+    cout << Word << endl;
 
     return 0;
 }
