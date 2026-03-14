@@ -18,13 +18,15 @@ bool DoesValGiveChar(int KeyCode) {
 
 int main() {
 
-    const int max_len = 21;
-    char Word[max_len];
+    const int min_len = 21;
+    char*  Word = (char*)malloc(min_len);
     int ind = 0;
 
     bool PressedKeys[128] = {false};
+    bool EnterPressed = false;
 
-    while (ind < 20) {
+    while (!EnterPressed) {
+
         bool MakeUppercase = GetAsyncKeyState(shiftcode1) & GetAsyncKeyState(shiftcode2) & IsPressed;
 
         //"An idiot admires complexity, a genius admires simplicity"
@@ -37,16 +39,17 @@ int main() {
                     case entercode:
                         if (ind > 0) {
                             Word[ind] = '\0';
-                            ind = max_len;
+                            EnterPressed = true;
                             KeyCode = 128;
                             break;
                         }
                         break;
                     case backspace:
                         if (ind > 0) {
-                            Word[ind] = '\0';
+                            free(Word+ind);
                             ind--;
                             Word[ind] = '\0';
+                            Word = (char*)realloc(Word, ind);
                             break;
                         }
                         break;
@@ -64,6 +67,7 @@ int main() {
                                     Word[ind] = PressedKey;
                                 }
                                 ind++;
+                                Word = (char*)realloc(Word, ind);
                             }
                         }
                         break;
@@ -83,9 +87,10 @@ int main() {
 
     Sleep(100);
 
-    Word[max_len - 1] = '\0';
+    Word[ind - 1] = '\0';
 
-    printf("%s\n", Word);
+    free(Word);
+    Word = NULL;
 
     return 0;
 }
