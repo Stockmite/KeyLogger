@@ -1,6 +1,7 @@
 #include <iostream>
 #include <windows.h>
 #include <string.h>
+#include <wchar.h>
 #include <winuser.h>
 #include <windef.h>
 
