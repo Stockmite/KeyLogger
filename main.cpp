@@ -45,6 +45,7 @@ int main() {
 
         bool IsShiftPressed = IsKeyPressed(VK_SHIFT);
         bool IsAltPressed = IsKeyPressed(VK_MENU);
+        bool IsCtrlPressed = IsKeyPressed(VK_CONTROL);
 
         //"An idiot admires complexity, a genius admires simplicity"
         //-Terry Davis
@@ -78,8 +79,9 @@ int main() {
 
                                 SHORT KeyVal = KeyCode;
                                 KeyVal = (IsShiftPressed) ? KeyVal | 0x100 : KeyVal;
-                                KeyVal = (IsAltPressed) ? KeyVal | 0x200 : KeyVal;
-                                wchar_t PressedKey = ValToCharMap[(SHORT)KeyVal];
+                                KeyVal = (IsAltPressed) ? KeyVal | 0x400 : KeyVal;
+                                KeyVal = (IsCtrlPressed) ? KeyVal | 0x200 : KeyVal;
+                                wchar_t PressedKey = ValToCharMap[KeyVal];
 
                                 PressedKeys[KeyCode] = true;
                                 Word.push_back(PressedKey);
