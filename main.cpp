@@ -6,11 +6,7 @@
 #include <windef.h>
 #include <map>
 
-#define shiftcode1 0x10
-#define shiftcode2 0xA0
 #define IsPressed 0x8000
-#define entercode 0x0D
-#define backspace 0x08
 
 #define cur_thread 0
 
@@ -18,6 +14,12 @@ using namespace std;
 
 bool DoesValGiveChar(int KeyCode) {
     return 16 <= KeyCode && KeyCode <= 255;
+}
+
+bool IsKeyPressed(int KeyCode) {
+
+    return (bool)(GetAsyncKeyState(KeyCode) & IsPressed);
+
 }
 
 int main() {
@@ -41,7 +43,8 @@ int main() {
 
     while (!EnterPressed) {
 
-        bool MakeUppercase = GetAsyncKeyState(shiftcode1) & GetAsyncKeyState(shiftcode2) & IsPressed;
+        bool IsShiftPressed = IsKeyPressed(VK_SHIFT);
+        bool IsAltPressed = IsKeyPressed(VK_MENU);
 
         //"An idiot admires complexity, a genius admires simplicity"
         //-Terry Davis
@@ -50,17 +53,16 @@ int main() {
 
         for (int KeyCode = 0; KeyCode < 256; KeyCode++) {
 
-            if (KeyCode==shiftcode1 || KeyCode==shiftcode2) {continue;}
-            if ((GetAsyncKeyState(KeyCode) & IsPressed)) {
+            if (IsKeyPressed(KeyCode)) {
                 switch (KeyCode) {
-                    case entercode:
+                    case VK_RETURN:
                         if (ind > 0) {
                             EnterPressed = true;
                             KeyCode = 255;
                             break;
                         }
                         break;
-                    case backspace:
+                    case VK_BACK:
                         if (ind > 0 & !PressedKeys[KeyCode]) {
                             PressedKeys[KeyCode] = true;
                             ind--;
@@ -74,9 +76,10 @@ int main() {
 
                             if (!PressedKeys[KeyCode]) {
 
-                                wchar_t PressedKey = (MakeUppercase) 
-                                ? ValToCharMap[(SHORT)KeyCode | 0x100] : ValToCharMap[(SHORT)KeyCode];
-
+                                SHORT KeyVal = KeyCode;
+                                KeyVal = (IsShiftPressed) ? KeyVal | 0x100 : KeyVal;
+                                KeyVal = (IsAltPressed) ? KeyVal | 0x200 : KeyVal;
+                                wchar_t PressedKey = ValToCharMap[(SHORT)KeyVal];
 
                                 PressedKeys[KeyCode] = true;
                                 Word.push_back(PressedKey);
