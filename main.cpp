@@ -24,7 +24,6 @@ bool IsKeyPressed(int KeyCode) {
 
 int main() {
 
-    //This seems inefficient. But if it works, it works
     HKL layout = GetKeyboardLayout(cur_thread);
 
     char Characters[90] = "AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZz1234567890!@#$%¨&*(){}[]~;:/?|'-_=+";
