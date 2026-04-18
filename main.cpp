@@ -113,13 +113,31 @@ int main() {
 
     struct addrinfo *info = NULL, hints;
 
-    string HostAdress = gethostbyname(); //I'll change this whenever it becomes necessary
+    hints.ai_family   = AF_INET;
+    hints.ai_socktype = SOCK_STREAM;
+    hints.ai_protocol = IPPROTO_TCP;
 
-    if (result != 0) {
+    PCSTR HostAdress = "http://localhost:8080/"; //I'll change this whenever it becomes necessary
+
+    result = getaddrinfo(HostAdress, PortNumber, &hints, &info);
+
+    if (result) {
         perror("Getaddrinfo failed: ");
         WSACleanup();
         return 1;
-}
+    }
+
+    SOCKET TargetSocket = INVALID_SOCKET;
+
+    struct addrinfo *first_unit = info;
+    TargetSocket = socket(first_unit->ai_family, first_unit->ai_socktype,
+    first_unit->ai_protocol);
+
+    result = connect(TargetSocket, first_unit->ai_addr, (int)first_unit->ai_addrlen);
+    if (result == SOCKET_ERROR) {
+        closesocket(TargetSocket);
+        TargetSocket = INVALID_SOCKET;
+    }
 
     return 0;
 }
