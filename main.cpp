@@ -135,8 +135,23 @@ int main() {
 
     result = connect(TargetSocket, first_unit->ai_addr, (int)first_unit->ai_addrlen);
     if (result == SOCKET_ERROR) {
+        while (first_unit != nullptr && result == SOCKET_ERROR) {
+            first_unit = first_unit->ai_next;
+            result = connect(TargetSocket, first_unit->ai_addr, (int)first_unit->ai_addrlen);
+        }
+    }
+
+    if (result == SOCKET_ERROR) {
         closesocket(TargetSocket);
         TargetSocket = INVALID_SOCKET;
+    }
+
+    freeaddrinfo(info);
+
+    if (TargetSocket == INVALID_SOCKET) {
+        perror("Connection failed, unable to connect to the target socket: ");
+        WSACleanup();
+        return 1;
     }
 
     return 0;
